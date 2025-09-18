@@ -13,25 +13,24 @@
 if (!defined('ABSPATH')) {
     exit;
 }
-
+require_once __DIR__ . '/vendor/autoload.php';
 // Define plugin constants
 define('ECCM_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('ECCM_PLUGIN_PATH', plugin_dir_path(__FILE__));
 
-class EasyCommerceCouponManager {
+final class EasyCommerceCouponManager {
+
+    /**
+	 * Plugin version
+	 *
+	 * @var string
+	 */
+	const version = '1.0.0';
     
     public function __construct() {
-        add_action('wp_ajax_eccm_create_coupon', array($this, 'create_coupon_ajax'));
-        add_action('wp_ajax_eccm_delete_coupon', array($this, 'delete_coupon_ajax'));
+        $this->define_constants();
+		add_action( 'plugins_loaded', [ $this, 'init_plugin' ] );
         add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
-    }
-    
-    private function is_easycommerce_active() {
-        return is_plugin_active('easycommerce/easycommerce.php') || class_exists('EasyCommerce');
-    }
-    
-    public function easycommerce_missing_notice() {
-        echo '<div class="notice notice-error"><p>EasyCommerce Coupon Manager requires EasyCommerce plugin to be installed and activated.</p></div>';
     }
     
     public function enqueue_scripts($hook) {
@@ -50,10 +49,6 @@ class EasyCommerceCouponManager {
     }
     
     public function admin_page() {
-        if (!$this->is_easycommerce_active()) {
-            echo '<div class="wrap"><h1>EasyCommerce Coupons</h1><p>EasyCommerce plugin is required.</p></div>';
-            return;
-        }
         
         $list_table = new ECCM_Coupon_List_Table();
         $list_table->prepare_items();
@@ -115,79 +110,6 @@ class EasyCommerceCouponManager {
         
         <div id="eccm-messages"></div>
         <?php
-    }
-    
-    public function create_coupon_ajax() {
-        check_ajax_referer('eccm_nonce', 'nonce');
-        
-        if (!current_user_can('manage_options')) {
-            wp_die('Insufficient permissions');
-        }
-        
-        global $wpdb;
-        
-        $name = sanitize_text_field($_POST['name']);
-        $code = sanitize_text_field($_POST['code']);
-        $discount_type = sanitize_text_field($_POST['discount_type']);
-        $amount = floatval($_POST['amount']);
-        $active = intval($_POST['active']);
-        
-        // Check if coupon code already exists
-        $existing = $wpdb->get_var($wpdb->prepare(
-            "SELECT id FROM {$wpdb->prefix}ec_coupons WHERE code = %s",
-            $code
-        ));
-        
-        if ($existing) {
-            wp_send_json_error('Coupon code already exists!');
-        }
-        
-        $result = $wpdb->insert(
-            $wpdb->prefix . 'ec_coupons',
-            array(
-                'name' => $name,
-                'code' => $code,
-                'discount_type' => $discount_type,
-                'amount' => $amount,
-                'active' => $active,
-                'status' => 1
-            ),
-            array('%s', '%s', '%s', '%f', '%d', '%d')
-        );
-        
-        if ($result === false) {
-            wp_send_json_error('Failed to create coupon: ' . $wpdb->last_error);
-        }
-        
-        wp_send_json_success('Coupon created successfully!');
-    }
-    
-    public function delete_coupon_ajax() {
-        check_ajax_referer('eccm_nonce', 'nonce');
-        
-        if (!current_user_can('manage_options')) {
-            wp_die('Insufficient permissions');
-        }
-        
-        global $wpdb;
-        
-        $coupon_id = intval($_POST['coupon_id']);
-        
-        if (!$coupon_id) {
-            wp_send_json_error('Invalid coupon ID');
-        }
-        
-        $result = $wpdb->delete(
-            $wpdb->prefix . 'ec_coupons',
-            array('id' => $coupon_id),
-            array('%d')
-        );
-        
-        if ($result === false) {
-            wp_send_json_error('Failed to delete coupon');
-        }
-        
-        wp_send_json_success('Coupon deleted successfully!');
     }
 }
 
@@ -286,102 +208,3 @@ class ECCM_Coupon_List_Table extends WP_List_Table {
 
 // Initialize the plugin
 new EasyCommerceCouponManager();
-
-// Create assets directory and files on activation
-register_activation_hook(__FILE__, 'eccm_create_assets');
-
-function eccm_create_assets() {
-    $upload_dir = wp_upload_dir();
-    $plugin_dir = plugin_dir_path(__FILE__);
-    $assets_dir = $plugin_dir . 'assets/';
-    
-    if (!file_exists($assets_dir)) {
-        wp_mkdir_p($assets_dir);
-    }
-    
-    // Create admin.js
-    $admin_js = "jQuery(document).ready(function($) {
-    // Handle add coupon form submission
-    $('#eccm-add-coupon-form').on('submit', function(e) {
-        e.preventDefault();
-        
-        var formData = $(this).serialize();
-        formData += '&action=eccm_create_coupon&nonce=' + eccm_ajax.nonce;
-        
-        $.post(eccm_ajax.ajax_url, formData, function(response) {
-            if (response.success) {
-                showMessage(response.data, 'success');
-                $('#eccm-add-coupon-form')[0].reset();
-                location.reload();
-            } else {
-                showMessage(response.data, 'error');
-            }
-        });
-    });
-    
-    // Handle delete coupon
-    $(document).on('click', '.eccm-delete-coupon', function(e) {
-        e.preventDefault();
-        
-        if (!confirm('Are you sure you want to delete this coupon?')) {
-            return;
-        }
-        
-        var couponId = $(this).data('id');
-        
-        $.post(eccm_ajax.ajax_url, {
-            action: 'eccm_delete_coupon',
-            coupon_id: couponId,
-            nonce: eccm_ajax.nonce
-        }, function(response) {
-            if (response.success) {
-                showMessage(response.data, 'success');
-                location.reload();
-            } else {
-                showMessage(response.data, 'error');
-            }
-        });
-    });
-    
-    function showMessage(message, type) {
-        var messageClass = type === 'success' ? 'notice-success' : 'notice-error';
-        var messageHtml = '<div class=\"notice ' + messageClass + ' is-dismissible\"><p>' + message + '</p></div>';
-        $('#eccm-messages').html(messageHtml);
-        
-        setTimeout(function() {
-            $('#eccm-messages').empty();
-        }, 5000);
-    }
-});";
-    
-    file_put_contents($assets_dir . 'admin.js', $admin_js);
-    
-    // Create admin.css
-    $admin_css = ".eccm-add-coupon-form {
-    border-radius: 4px;
-}
-
-.eccm-add-coupon-form h2 {
-    margin-top: 0;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 10px;
-}
-
-.eccm-delete-coupon {
-    color: #a00;
-}
-
-.eccm-delete-coupon:hover {
-    color: #dc3232;
-}
-
-#eccm-messages {
-    margin: 20px 0;
-}
-
-#eccm-messages .notice {
-    margin: 5px 0 15px;
-}";
-    
-    file_put_contents($assets_dir . 'admin.css', $admin_css);
-}

@@ -43,7 +43,7 @@ jQuery(document).ready(function($) {
     
     function showMessage(message, type) {
         var messageClass = type === 'success' ? 'notice-success' : 'notice-error';
-        var messageHtml = '<div class="notice ' + messageClass + ' is-dismissible"><p>' + message + '</p></div>';
+        var messageHtml = '<div class=\"notice ' + messageClass + ' is-dismissible\"><p>' + message + '</p></div>';
         $('#eccm-messages').html(messageHtml);
         
         setTimeout(function() {
