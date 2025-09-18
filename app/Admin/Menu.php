@@ -13,13 +13,14 @@ class Menu {
     }
 
     public function add_admin_menu() {
-        add_submenu_page(
-            'options-general.php',
+        add_menu_page(
             'EasyCommerce Coupons',
-            'EC Coupons',
+            'EC Coupons', 
             'manage_options',
             'ec-coupon-manager',
-            array( $this, 'admin_page' )
+            array( $this, 'admin_page' ),
+            'dashicons-tag',
+            4
         );
     }
 
