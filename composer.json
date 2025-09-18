@@ -10,8 +10,8 @@
     ],
     "autoload": {
         "psr-4": {
-            "Ec\\CouponManager\\": "app/",
-            "Ec\\CouponManager\\Classes\\": "classes/"
+            "EC\\CouponManager\\": "app/",
+            "EC\\CouponManager\\Classes\\": "classes/"
         },
         "files": ["app/Helpers/functions.php"]
     },

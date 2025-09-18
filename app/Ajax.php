@@ -1,5 +1,5 @@
 <?php 
-namespace EC\CouponManager\Ajax;
+namespace EC\CouponManager;
 
 defined( 'ABSPATH' ) || exit;
 

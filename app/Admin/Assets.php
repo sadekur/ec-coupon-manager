@@ -1,5 +1,5 @@
 <?php 
-namespace EC\CouponManager\Admin\Assets;
+namespace EC\CouponManager\Admin;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -13,32 +13,25 @@ class Assets {
     public function eccm_enqueue_admin_assets() {
         wp_enqueue_script(
             'eccm-admin-script',
-            THRAIL_COMMERCE_ASSETS . '/js/admin.js',
+            ECCM_ASSETS . '/js/admin.js',
             ['jquery'],
-            filemtime(THRAIL_COMMERCE_PATH . 'assets/js/admin.js'),
+            filemtime( ECCM_PLUGIN_PATH . 'assets/js/admin.js' ),
             true
         );
 
-        wp_localize_script('thrail-commerce-admin-script', 'THRAILCOMMERCE', [
-            'nonce'    => wp_create_nonce( 'wp_rest' ),
+        wp_localize_script('eccm-admin-script', 'ECCM', [
+            'nonce'    => wp_create_nonce( 'eccm_nonce' ),
             'adminurl' => admin_url(),
             'ajaxurl'  => admin_url( 'admin-ajax.php' ),
-            'apiurl'   => untrailingslashit( rest_url( 'thrail/v1' ) ),
-            'error'    => __( 'Something went wrong', 'thrail-commerce' ),
+            'apiurl'   => untrailingslashit( rest_url( 'ec-coupon-manager/v1' ) ),
+            'error'    => __( 'Something went wrong', 'ec-coupon-manager' ),
         ]);
 
         wp_enqueue_style(
-            'thrail-commerce-admin-style',
-            THRAIL_COMMERCE_ASSETS . '/css/admin.css',
+            'eccm-admin-style',
+            ECCM_ASSETS . '/css/admin.css',
             [],
-            filemtime(THRAIL_COMMERCE_PATH . 'assets/css/admin.css')
-        );
-
-        wp_enqueue_style(
-            'thrail-commerce-init-style',
-            THRAIL_COMMERCE_ASSETS . '/css/init.css',
-            [],
-            filemtime(THRAIL_COMMERCE_PATH . 'assets/css/init.css')
+            filemtime( ECCM_PLUGIN_PATH . 'assets/css/admin.css' )
         );
 
         wp_enqueue_style(
