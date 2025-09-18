@@ -20,10 +20,10 @@ class Assets {
         );
 
         wp_localize_script('eccm-admin-script', 'ECCM', [
-            'nonce'    => wp_create_nonce( 'wp_rest' ), // Use a general REST nonce
+            'nonce'    => wp_create_nonce( 'wp_rest' ),
             'adminurl' => admin_url(),
             'ajaxurl'  => admin_url( 'admin-ajax.php' ),
-            'apiurl'   => untrailingslashit( rest_url( 'eccm/v1' ) ), // <-- Corrected namespace
+            'apiurl'   => untrailingslashit( rest_url( 'eccm/v1' ) ),
             'error'    => __( 'Something went wrong', 'ec-coupon-manager' ),
         ]);
 
