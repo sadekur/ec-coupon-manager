@@ -1,0 +1,25 @@
+.eccm-add-coupon-form {
+    border-radius: 4px;
+}
+
+.eccm-add-coupon-form h2 {
+    margin-top: 0;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.eccm-delete-coupon {
+    color: #a00;
+}
+
+.eccm-delete-coupon:hover {
+    color: #dc3232;
+}
+
+#eccm-messages {
+    margin: 20px 0;
+}
+
+#eccm-messages .notice {
+    margin: 5px 0 15px;
+}
