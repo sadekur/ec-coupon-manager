@@ -1,0 +1,19 @@
+{
+    "name": "ec/coupon-manager",
+	"type": "wordpress-plugin",
+    "license": "GPLv2",
+    "authors": [
+        {
+            "name": "Sadekur Rahman",
+            "email": "shadekur.rahman60@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Ec\\CouponManager\\": "app/",
+            "Ec\\CouponManager\\Classes\\": "classes/"
+        },
+        "files": ["app/Helpers/functions.php"]
+    },
+    "require": {}
+}

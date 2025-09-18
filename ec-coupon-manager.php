@@ -1,10 +1,10 @@
 <?php
 /**
  * Plugin Name: EasyCommerce Coupon Manager
- * Plugin URI: https://yoursite.com
+ * Plugin URI: https://sadekurrahman.com
  * Description: A simple plugin to manage EasyCommerce coupons with list table and API functionality
  * Version: 1.0.0
- * Author: Your Name
+ * Author: Sadekur Rahman
  * License: GPL v2 or later
  * Requires Plugins: easycommerce
  */
@@ -21,19 +21,9 @@ define('ECCM_PLUGIN_PATH', plugin_dir_path(__FILE__));
 class EasyCommerceCouponManager {
     
     public function __construct() {
-        add_action('init', array($this, 'init'));
-        add_action('admin_menu', array($this, 'add_admin_menu'));
         add_action('wp_ajax_eccm_create_coupon', array($this, 'create_coupon_ajax'));
         add_action('wp_ajax_eccm_delete_coupon', array($this, 'delete_coupon_ajax'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
-    }
-    
-    public function init() {
-        // Check if EasyCommerce is active
-        if (!$this->is_easycommerce_active()) {
-            add_action('admin_notices', array($this, 'easycommerce_missing_notice'));
-            return;
-        }
     }
     
     private function is_easycommerce_active() {
@@ -42,17 +32,6 @@ class EasyCommerceCouponManager {
     
     public function easycommerce_missing_notice() {
         echo '<div class="notice notice-error"><p>EasyCommerce Coupon Manager requires EasyCommerce plugin to be installed and activated.</p></div>';
-    }
-    
-    public function add_admin_menu() {
-        add_submenu_page(
-            'options-general.php',
-            'EasyCommerce Coupons',
-            'EC Coupons',
-            'manage_options',
-            'ec-coupon-manager',
-            array($this, 'admin_page')
-        );
     }
     
     public function enqueue_scripts($hook) {
