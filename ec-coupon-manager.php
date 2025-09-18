@@ -58,10 +58,10 @@ final class EasyCommerceCouponManager {
 	public function init_plugin() {
         // new EC\CouponManager\Admin\Menu();
         new EC\CouponManager\Admin\Assets();
-        // new EC\CouponManager\Admin\ECCM_Coupon_List_Table();
-        if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
-			new EC\CouponManager\Ajax();
-		}
+        new EC\CouponManager\REST();
+        // if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+		// 	new EC\CouponManager\Ajax();
+		// }
         if ( is_admin() ) {
 		    new EC\CouponManager\Admin();
 		}

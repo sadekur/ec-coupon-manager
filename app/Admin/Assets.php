@@ -6,7 +6,7 @@ defined( 'ABSPATH' ) || exit;
 use EC\CouponManager\Classes\Trait\Hook;
 class Assets {
     use Hook;
- public function __construct() {
+    public function __construct() {
         $this->action( 'admin_enqueue_scripts', [ $this, 'eccm_enqueue_admin_assets' ] );
     }
 
@@ -20,10 +20,10 @@ class Assets {
         );
 
         wp_localize_script('eccm-admin-script', 'ECCM', [
-            'nonce'    => wp_create_nonce( 'eccm_nonce' ),
+            'nonce'    => wp_create_nonce( 'wp_rest' ), // Use a general REST nonce
             'adminurl' => admin_url(),
             'ajaxurl'  => admin_url( 'admin-ajax.php' ),
-            'apiurl'   => untrailingslashit( rest_url( 'ec-coupon-manager/v1' ) ),
+            'apiurl'   => untrailingslashit( rest_url( 'eccm/v1' ) ), // <-- Corrected namespace
             'error'    => __( 'Something went wrong', 'ec-coupon-manager' ),
         ]);
 
@@ -40,6 +40,5 @@ class Assets {
             [],
             null
         );
-
     }
 }
