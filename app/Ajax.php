@@ -13,28 +13,28 @@ class Ajax {
     }
 
     public function create_coupon_ajax() {
-        check_ajax_referer('eccm_nonce', 'nonce');
+        check_ajax_referer( 'eccm_nonce', 'nonce' );
         
-        if (!current_user_can('manage_options')) {
-            wp_die('Insufficient permissions');
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_die( 'Insufficient permissions' );
         }
         
         global $wpdb;
         
-        $name = sanitize_text_field($_POST['name']);
-        $code = sanitize_text_field($_POST['code']);
-        $discount_type = sanitize_text_field($_POST['discount_type']);
-        $amount = floatval($_POST['amount']);
-        $active = intval($_POST['active']);
+        $name = sanitize_text_field( $_POST['name'] );
+        $code = sanitize_text_field( $_POST['code'] );
+        $discount_type = sanitize_text_field( $_POST['discount_type'] );
+        $amount = floatval( $_POST['amount'] );
+        $active = intval( $_POST['active'] );
         
         // Check if coupon code already exists
-        $existing = $wpdb->get_var($wpdb->prepare(
+        $existing = $wpdb->get_var( $wpdb->prepare(
             "SELECT id FROM {$wpdb->prefix}ec_coupons WHERE code = %s",
             $code
-        ));
+        ) );
         
-        if ($existing) {
-            wp_send_json_error('Coupon code already exists!');
+        if ( $existing ) {
+            wp_send_json_error( 'Coupon code already exists !' );
         }
         
         $result = $wpdb->insert(
@@ -47,14 +47,14 @@ class Ajax {
                 'active' => $active,
                 'status' => 1
             ),
-            array('%s', '%s', '%s', '%f', '%d', '%d')
+            array( '%s', '%s', '%s', '%f', '%d', '%d' )
         );
         
-        if ($result === false) {
-            wp_send_json_error('Failed to create coupon: ' . $wpdb->last_error);
+        if ( $result === false ) {
+            wp_send_json_error( 'Failed to create coupon: ' . $wpdb->last_error );
         }
         
-        wp_send_json_success('Coupon created successfully!');
+        wp_send_json_success( 'Coupon created successfully!' );
     }
     
     public function delete_coupon_ajax() {
