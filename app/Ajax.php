@@ -58,30 +58,30 @@ class Ajax {
     }
     
     public function delete_coupon_ajax() {
-        check_ajax_referer('eccm_nonce', 'nonce');
+        check_ajax_referer( 'eccm_nonce', 'nonce' );
         
-        if (!current_user_can('manage_options')) {
-            wp_die('Insufficient permissions');
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_die( 'Insufficient permissions' );
         }
         
         global $wpdb;
         
-        $coupon_id = intval($_POST['coupon_id']);
+        $coupon_id = intval( $_POST['coupon_id'] );
         
-        if (!$coupon_id) {
-            wp_send_json_error('Invalid coupon ID');
+        if ( ! $coupon_id ) {
+            wp_send_json_error( 'Invalid coupon ID' );
         }
         
         $result = $wpdb->delete(
             $wpdb->prefix . 'ec_coupons',
-            array('id' => $coupon_id),
-            array('%d')
+            array( 'id' => $coupon_id ),
+            array( '%d' )
         );
         
-        if ($result === false) {
-            wp_send_json_error('Failed to delete coupon');
+        if ( $result === false ) {
+            wp_send_json_error( 'Failed to delete coupon' );
         }
         
-        wp_send_json_success('Coupon deleted successfully!');
+        wp_send_json_success( 'Coupon deleted successfully !' );
     }
 }
